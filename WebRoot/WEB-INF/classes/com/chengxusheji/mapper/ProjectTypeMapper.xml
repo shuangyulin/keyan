@@ -1,0 +1,48 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ProjectTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加项目性质记录 -->
+	<insert id="addProjectType" parameterType="projectType">
+		insert into t_projectType(projectTypeName) values 
+		(#{projectTypeName})
+	</insert>
+
+	<!-- 按照查询条件分页查询项目性质记录 -->
+	<select id="queryProjectType" resultMap="projectTypeMap" >
+		select t_projectType.* from t_projectType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="projectTypeMap" type="projectType">
+        <id property="projectTypeId" column="projectTypeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有项目性质记录 -->
+	<select id="queryProjectTypeList" resultMap="projectTypeMap" >
+		select t_projectType.* from t_projectType ${where}
+	</select>
+
+    <!-- 按照查询条件的项目性质记录数 -->
+	<select id="queryProjectTypeCount" resultType="int">
+		select count(*) from t_projectType ${where}
+	</select>
+
+	<!-- 根据主键查询某个项目性质记录 -->
+	<select id="getProjectType" parameterType="int" resultMap="projectTypeMap">
+		select * from t_projectType where t_projectType.projectTypeId = #{projectTypeId}
+	</select>
+
+	<!-- 更新项目性质记录 -->
+	<update id="updateProjectType" parameterType="projectType">
+		update t_projectType set projectTypeName=#{projectTypeName} where projectTypeId = #{projectTypeId}
+	</update>
+
+	<!-- 删除项目性质记录 -->
+	<delete id="deleteProjectType" parameterType="int">
+		delete from t_projectType where projectTypeId=#{projectTypeId}
+	</delete>
+
+</mapper>

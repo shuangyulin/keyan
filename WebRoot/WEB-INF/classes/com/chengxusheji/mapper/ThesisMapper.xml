@@ -1,0 +1,49 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ThesisMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加论文记录 -->
+	<insert id="addThesis" parameterType="thesis">
+		insert into t_thesis(xkml,name,lwfm,author,teacher,publishDate,thesisDesc,thesisFile,xgyj,userObj) values 
+		(#{xkml},#{name},#{lwfm},#{author},#{teacher},#{publishDate},#{thesisDesc},#{thesisFile},#{xgyj},#{userObj.user_name})
+	</insert>
+
+	<!-- 按照查询条件分页查询论文记录 -->
+	<select id="queryThesis" resultMap="thesisMap" >
+		select t_thesis.* from t_thesis,t_userInfo ${where} and t_thesis.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="thesisMap" type="thesis">
+        <id property="thesisId" column="thesisId" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有论文记录 -->
+	<select id="queryThesisList" resultMap="thesisMap" >
+		select t_thesis.* from t_thesis,t_userInfo ${where} and t_thesis.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的论文记录数 -->
+	<select id="queryThesisCount" resultType="int">
+		select count(*) from t_thesis,t_userInfo ${where} and t_thesis.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个论文记录 -->
+	<select id="getThesis" parameterType="int" resultMap="thesisMap">
+		select * from t_thesis where t_thesis.thesisId = #{thesisId}
+	</select>
+
+	<!-- 更新论文记录 -->
+	<update id="updateThesis" parameterType="thesis">
+		update t_thesis set xkml=#{xkml},name=#{name},lwfm=#{lwfm},author=#{author},teacher=#{teacher},publishDate=#{publishDate},thesisDesc=#{thesisDesc},thesisFile=#{thesisFile},xgyj=#{xgyj},userObj=#{userObj.user_name} where thesisId = #{thesisId}
+	</update>
+
+	<!-- 删除论文记录 -->
+	<delete id="deleteThesis" parameterType="int">
+		delete from t_thesis where thesisId=#{thesisId}
+	</delete>
+
+</mapper>

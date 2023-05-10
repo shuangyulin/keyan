@@ -1,0 +1,50 @@
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ProjectMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加项目记录 -->
+	<insert id="addProject" parameterType="project">
+		insert into t_project(projectTypeObj,projectName,projectPhoto,mainPerson,comeFrom,kydh,startDate,endDate,kyMoney,projectDesc,userObj,shzt,shr,shsj) values 
+		(#{projectTypeObj.projectTypeId},#{projectName},#{projectPhoto},#{mainPerson},#{comeFrom},#{kydh},#{startDate},#{endDate},#{kyMoney},#{projectDesc},#{userObj.user_name},#{shzt},#{shr},#{shsj})
+	</insert>
+
+	<!-- 按照查询条件分页查询项目记录 -->
+	<select id="queryProject" resultMap="projectMap" >
+		select t_project.* from t_project,t_projectType,t_userInfo ${where} and t_project.projectTypeObj = t_projectType.projectTypeId and t_project.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="projectMap" type="project">
+        <id property="projectId" column="projectId" />
+        <association property="projectTypeObj" column="projectTypeObj" select="com.chengxusheji.mapper.ProjectTypeMapper.getProjectType" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有项目记录 -->
+	<select id="queryProjectList" resultMap="projectMap" >
+		select t_project.* from t_project,t_projectType,t_userInfo ${where} and t_project.projectTypeObj = t_projectType.projectTypeId and t_project.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的项目记录数 -->
+	<select id="queryProjectCount" resultType="int">
+		select count(*) from t_project,t_projectType,t_userInfo ${where} and t_project.projectTypeObj = t_projectType.projectTypeId and t_project.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个项目记录 -->
+	<select id="getProject" parameterType="int" resultMap="projectMap">
+		select * from t_project where t_project.projectId = #{projectId}
+	</select>
+
+	<!-- 更新项目记录 -->
+	<update id="updateProject" parameterType="project">
+		update t_project set projectTypeObj=#{projectTypeObj.projectTypeId},projectName=#{projectName},projectPhoto=#{projectPhoto},mainPerson=#{mainPerson},comeFrom=#{comeFrom},kydh=#{kydh},startDate=#{startDate},endDate=#{endDate},kyMoney=#{kyMoney},projectDesc=#{projectDesc},userObj=#{userObj.user_name},shzt=#{shzt},shr=#{shr},shsj=#{shsj} where projectId = #{projectId}
+	</update>
+
+	<!-- 删除项目记录 -->
+	<delete id="deleteProject" parameterType="int">
+		delete from t_project where projectId=#{projectId}
+	</delete>
+
+</mapper>
